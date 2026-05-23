@@ -7,10 +7,14 @@ class ItemWidget extends StatelessWidget {
     super.key,
     required this.item,
     required this.aoMudarStatus,
+    required this.aoEditar,
+    required this.aoDeletar,
   });
 
   final ItemCompra item;
   final VoidCallback aoMudarStatus;
+  final VoidCallback aoEditar;
+  final VoidCallback aoDeletar;
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +36,20 @@ class ItemWidget extends StatelessWidget {
           ),
         ),
         subtitle: Text('Quantidade: ${item.quantidade}'),
-        trailing: Icon(
-          item.foiComprado ? Icons.check_circle : Icons.shopping_cart,
-          color: item.foiComprado ? Colors.green : Colors.redAccent,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              color: Colors.blueGrey,
+              onPressed: aoEditar,
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              color: Colors.redAccent,
+              onPressed: aoDeletar,
+            ),
+          ],
         ),
         onTap: aoMudarStatus,
       ),

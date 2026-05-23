@@ -20,6 +20,56 @@ class _ListaComprasScreenState extends State<ListaComprasScreen> {
   final _nomeController = TextEditingController();
   final _qtdController = TextEditingController();
 
+  void _abrirFormularioEdicao(ItemCompra item) {
+    _nomeController.text = item.nome;
+    _qtdController.text = item.quantidade.toString();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            top: 20,
+            right: 20,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _nomeController,
+                decoration: const InputDecoration(
+                  labelText: 'Nome do Item',
+                ),
+              ),
+              TextField(
+                controller: _qtdController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Quantidade'),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _editarItem(item.id),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueGrey,
+                  ),
+                  child: const Text(
+                    'Salvar Alteracoes',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _abrirFormularioCadastro() {
     showModalBottomSheet(
       context: context,
@@ -101,6 +151,36 @@ class _ListaComprasScreenState extends State<ListaComprasScreen> {
     );
   }
 
+  void _editarItem(String id) {
+    final nomeDigitado = _nomeController.text.trim();
+    final qtdDigitada = int.tryParse(_qtdController.text) ?? 1;
+
+    if (nomeDigitado.isEmpty) return;
+
+    final index = _meusItens.indexWhere((item) => item.id == id);
+    if (index == -1) return;
+
+    setState(() {
+      _meusItens[index] = ItemCompra(
+        id: _meusItens[index].id,
+        nome: nomeDigitado,
+        quantidade: qtdDigitada,
+        foiComprado: _meusItens[index].foiComprado,
+      );
+    });
+
+    _nomeController.clear();
+    _qtdController.clear();
+    Navigator.of(context).pop();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Item atualizado com sucesso!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _nomeController.dispose();
@@ -155,6 +235,8 @@ class _ListaComprasScreenState extends State<ListaComprasScreen> {
                   itemAtual.foiComprado = !itemAtual.foiComprado;
                 });
               },
+              aoEditar: () => _abrirFormularioEdicao(itemAtual),
+              aoDeletar: () => _removerItem(itemAtual.id),
             ),
           );
         },
