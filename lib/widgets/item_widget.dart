@@ -18,6 +18,10 @@ class ItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final precoUnitario = item.precoEstimadoUnitario ?? 0;
+    final subtotal = item.quantidade * precoUnitario;
+    final mostraPreco = precoUnitario > 0;
+
     return Card(
       color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -35,7 +39,11 @@ class ItemWidget extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        subtitle: Text('Quantidade: ${item.quantidade}'),
+        subtitle: Text(
+          mostraPreco
+              ? 'Quantidade: ${item.quantidade} | Estimado: R\$ ${subtotal.toStringAsFixed(2)}'
+              : 'Quantidade: ${item.quantidade}',
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
